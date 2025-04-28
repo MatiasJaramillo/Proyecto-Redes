@@ -1,13 +1,17 @@
-# sender_api.py
-from flask import Flask, jsonify
+# sender.py
+import os
 import random, time
 from threading import Thread
+from flask import Flask, jsonify
 from scapy.all import send, IP, TCP
 
 app = Flask(__name__)
 
+# Interceptor’s address on red-a; can override via Docker ENV INTERCEPT_HOST
+INTERCEPT_HOST = os.getenv("INTERCEPT_HOST", "172.18.1.3")
+
 def do_send(flags: str):
-    pkt = IP(dst="packet_sniffer")/TCP(
+    pkt = IP(dst=INTERCEPT_HOST)/TCP(
         sport = random.randint(1025, 65535),
         dport = 80,
         flags = flags
